@@ -183,7 +183,7 @@ class SQLDebugPanel(DebugPanel):
                 query['start_offset'] = width_ratio_tally
                 query['end_offset'] = query['width_ratio'] + query['start_offset']
                 width_ratio_tally += query['width_ratio']
-                query['stacktrace'] = render_stacktrace(query['stacktrace'][:-1])
+                query['stacktrace'] = render_stacktrace(query['stacktrace'])
                 i += 1
 
                 if not traces.get(query['stacktrace']):

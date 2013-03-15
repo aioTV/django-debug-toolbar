@@ -115,6 +115,7 @@ class NormalCursorWrapper(object):
             enable_stacktraces = getattr(settings,
                 'DEBUG_TOOLBAR_CONFIG', {}).get('ENABLE_STACKTRACES', True)
             if enable_stacktraces:
+                __traceback_hide__ = True
                 stacktrace = tidy_stacktrace(reversed(get_stack()))
             else:
                 stacktrace = []
