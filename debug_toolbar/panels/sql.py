@@ -131,6 +131,7 @@ class SQLDebugPanel(DebugPanel):
         return ''
 
     def process_response(self, request, response):
+        traces = {}
         if self._queries:
             width_ratio_tally = 0
             factor = int(256.0 / (len(self._databases) * 2.5))
@@ -182,16 +183,26 @@ class SQLDebugPanel(DebugPanel):
                 query['start_offset'] = width_ratio_tally
                 query['end_offset'] = query['width_ratio'] + query['start_offset']
                 width_ratio_tally += query['width_ratio']
-                query['stacktrace'] = render_stacktrace(query['stacktrace'])
+                query['stacktrace'] = render_stacktrace(query['stacktrace'][:-1])
                 i += 1
+
+                if not traces.get(query['stacktrace']):
+                    traces[query['stacktrace']] = []
+                traces[query['stacktrace']].append(query)
 
             if trans_id:
                 self._queries[(i - 1)][1]['ends_trans'] = True
+
+        traces = [(len(queries), trace, queries) for trace, queries in traces.items()]
+        traces.sort(reverse=True)
+        traces = [{'count': count, 'trace': trace, 'queries': queries, 'sample': queries[0]}
+                  for (count, trace, queries) in traces]
 
         self.record_stats({
             'databases': sorted(self._databases.items(), key=lambda x: -x[1]['time_spent']),
             'queries': [q for a, q in self._queries],
             'sql_time': self._sql_time,
+            'traces': traces,
         })
 
 

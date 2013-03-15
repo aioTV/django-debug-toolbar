@@ -23,14 +23,16 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for query in queries %}
+            {% for trace in traces %}
+			{% with trace.sample as query %}
 				<tr class="djDebugHoverable {% cycle 'djDebugOdd' 'djDebugEven' %}{% if query.is_slow %} djDebugRowWarning{% endif %}{% if query.starts_trans %} djDebugStartTransaction{% endif %}{% if query.ends_trans %} djDebugEndTransaction{% endif %}{% if query.in_trans %} djDebugInTransaction{% endif %}" id="sqlMain_{{ forloop.counter }}">
 					<td class="color"><span style="background-color: rgb({{ query.rgb_color|join:", " }});">&nbsp;</span></td>
 					<td class="toggle">
 						<a class="djToggleSwitch" data-toggle-name="sqlMain" data-toggle-id="{{ forloop.counter }}" data-toggle-open="+" data-toggle-close="-" href="javascript:void(0)">+</a>
+                        <div class="djQueryCount">{{ trace.count }}</div>
 					</td>
 					<td class="query">
-						<div class="djDebugSqlWrap">
+						<div class="djDebugSqlWrap"></div>
 							<div class="djDebugSql">{{ query.sql|safe }}</div>
 						</div>
 					</td>
@@ -66,6 +68,16 @@
 							{% if query.stacktrace %}
 								<pre class="stack">{{ query.stacktrace }}</pre>
 							{% endif %}
+                            <table>
+                              {% for q in trace.queries %}
+                              <tr>
+                                <td class="query">
+                                  <div class="djDebugSqlWrap"></div>
+                                  <div class="djDebugSql">{{ q.sql|safe }}</div>
+                                </td>
+                              </tr>
+                              {% endfor %}
+                            </table>
 							{% if query.template_info %}
 								<table>
 									{% for line in query.template_info.context %}
@@ -80,6 +92,7 @@
 						</div>
 					</td>
 				</tr>
+            {% endwith %}
 			{% endfor %}
 		</tbody>
 	</table>
