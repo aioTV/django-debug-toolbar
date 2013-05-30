@@ -99,6 +99,8 @@ class DebugToolbarMiddleware(object):
             for panel in toolbar.panels:
                 panel.process_request(request)
             self.__class__.debug_toolbars[thread.get_ident()] = toolbar
+        else:
+            self.__class__.debug_toolbars[thread.get_ident()] = None
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         __traceback_hide__ = True
